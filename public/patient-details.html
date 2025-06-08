@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Patient Details - Book Appointment</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .form-section {
+      padding: 2rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      margin: 1.5rem auto;
+      max-width: 800px;
+    }
+
+    .form-section h2 {
+      color: #4a6fa5;
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group label {
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: #343a40;
+    }
+
+    .form-group input,
+    .form-group select {
+      padding: 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #66b3ff;
+      box-shadow: 0 0 0 3px rgba(102, 179, 255, 0.2);
+    }
+  </style>
+</head>
+<body class="bg-blue-50 font-sans">
+  <!-- Header -->
+  <div class="p-4 flex justify-between items-center bg-white shadow">
+    <div class="flex items-center">
+      <svg class="w-6 h-6 text-blue-600 mr-0 ml-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+      </svg>
+      <h1 class="text-2xl font-bold    text-blue-600">MediCare</h1>
+    </div>
+    <button onclick="window.location.href='admindasboard.html'" class="text-gray-600 hover:text-gray-800 flex items-center">
+      Back to Dashboard
+      <svg class="w-4 h-4 mr-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/> -->
+      </svg>
+    </button>
+  </div>
+
+  <!-- Book an Appointment Title -->
+  <div class="max-w-4xl mx-auto mt-8">
+    <h2 class="text-2xl  font-bold text-gray-800   mb-6">Book an Appointment</h2>
+  </div>
+
+  <!-- Stepper -->
+  <div class="max-w-4xl mx-auto mt-8">
+    <div class="flex items-center justify-between relative">
+      <div class="relative flex justify-between w-full">
+        <!-- Step 1 -->
+        <div class="flex-1 text-center">
+          <div class="relative">
+            <!-- Line after step 1 -->
+            <div class="absolute top-5 left-1/2 w-full h-1 bg-gray-200"></div>
+            <!-- Circle -->
+            <div class="w-10 h-10 bg-white text-blue-600 rounded-full flex items-center justify-center mx-auto relative z-10 border-2 border-blue-600">1</div>
+          </div>
+          <p class="mt-2 text-sm font-medium text-blue-600">Patient details</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex-1 text-center">
+          <div class="relative">
+            <!-- Line before and after step 2 -->
+            <div class="absolute top-5 right-1/2 w-full h-1 bg-gray-200"></div>
+            <div class="absolute top-5 left-1/2 w-full h-1 bg-gray-200"></div>
+            <!-- Circle -->
+            <div class="w-10 h-10 bg-white text-gray-400 rounded-full flex items-center justify-center mx-auto relative z-10 border-2 border-gray-200">2</div>
+          </div>
+          <p class="mt-2 text-sm text-gray-400">Select doctor</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex-1 text-center">
+          <div class="relative">
+            <!-- Line before and after step 3 -->
+            <div class="absolute top-5 right-1/2 w-full h-1 bg-gray-200"></div>
+            <div class="absolute top-5 left-1/2 w-full h-1 bg-gray-200"></div>
+            <!-- Circle -->
+            <div class="w-10 h-10 bg-white text-gray-400 rounded-full flex items-center justify-center mx-auto relative z-10 border-2 border-gray-200">3</div>
+          </div>
+          <p class="mt-2 text-sm text-gray-400">Choose Date & Time</p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="flex-1 text-center">
+          <div class="relative">
+            <!-- Line before step 4 -->
+            <div class="absolute top-5 right-1/2 w-full h-1 bg-gray-200"></div>
+            <!-- Circle -->
+            <div class="w-10 h-10 bg-white text-gray-400 rounded-full flex items-center justify-center mx-auto relative z-10 border-2 border-gray-200">4</div>
+          </div>
+          <p class="mt-2 text-sm text-gray-400">Confirmation</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Patient Details Form -->
+  <section class="form-section" id="patientSection">
+    <h2>Patient Details</h2>
+    <form id="patientForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="patient-name">Patient Name<span class="text-red-500">*</span></label>
+          <input type="text" id="patient-name" name="name" placeholder="Enter full name" required pattern="^[A-Za-z\s]+$"title="Only letters and spaces are allowed" 
+/>
+ </div>
+
+<div class="form-group">
+  
+          <label for="age">Age<span class="text-red-500">*</span></label>
+          <select id="age" name="age" class="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+            <option value="">Select Age</option>
+            <option value="0.25">below 1 year</option>
+            <option value="1">1 year</option>
+            <option value="2">2 years</option>
+            <option value="3">3 years</option>
+            <option value="4">4 years</option>
+            <option value="5">5 years</option>
+            <option value="6">6 years</option>
+            <option value="7">7 years</option>
+            <option value="8">8 years</option>
+            <option value="9">9 years</option>
+            <option value="10">10 years</option>
+            <option value="11">11 years</option>
+            <option value="12">12 years</option>
+            <option value="13">13 years</option>
+            <option value="14">14 years</option>
+            <option value="15">15 years</option>
+            <option value="16">16 years</option>
+            <option value="17">17 years</option>
+            <option value="18">18 years</option>
+            <option value="19">19 years</option>
+            <option value="20">20 years</option>
+            <option value="21">21 years</option>
+            <option value="22">22 years</option>
+            <option value="23">23 years</option>
+            <option value="24">24 years</option>
+            <option value="25">25 years</option>
+            <option value="26">26 years</option>
+            <option value="27">27 years</option>
+            <option value="28">28 years</option>
+            <option value="29">29 years</option>
+            <option value="30">30 years</option>
+            <option value="31">31 years</option>
+            <option value="32">32 years</option>
+            <option value="33">33 years</option>
+            <option value="34">34 years</option>
+            <option value="35">35 years</option>
+            <option value="36">36 years</option>
+            <option value="37">37 years</option>
+            <option value="38">38 years</option>
+            <option value="39">39 years</option>
+            <option value="40">40 years</option>
+            <option value="41">41 years</option>
+            <option value="42">42 years</option>
+            <option value="43">43 years</option>
+            <option value="44">44 years</option>
+            <option value="45">45 years</option>
+            <option value="46">46 years</option>
+            <option value="47">47 years</option>
+            <option value="48">48 years</option>
+            <option value="49">49 years</option>
+            <option value="50">50 years</option>
+            <option value="51">51 years</option>
+            <option value="52">52 years</option>
+            <option value="53">53 years</option>
+            <option value="54">54 years</option>
+            <option value="55">55 years</option>
+            <option value="56">56 years</option>
+            <option value="57">57 years</option>
+            <option value="58">58 years</option>
+            <option value="59">59 years</option>
+            <option value="60">60 years</option>
+            <option value="61">61 years</option>
+            <option value="62">62 years</option>
+            <option value="63">63 years</option>
+            <option value="64">64 years</option>
+            <option value="65">65 years</option>
+            <option value="66">66 years</option>
+            <option value="67">67 years</option>
+            <option value="68">68 years</option>
+            <option value="69">69 years</option>
+            <option value="70">70 years</option>
+            <option value="71">71 years</option>
+            <option value="72">72 years</option>
+            <option value="73">73 years</option>
+            <option value="74">74 years</option>
+            <option value="75">75 years</option>
+            <option value="76">76 years</option>
+            <option value="77">77 years</option>
+            <option value="78">78 years</option>
+            <option value="79">79 years</option>
+            <option value="80">80 years</option>
+            <option value="81">81 years</option>
+            <option value="82">82 years</option>
+            <option value="83">83 years</option>
+            <option value="84">84 years</option>
+            <option value="85">85 years</option>
+            <option value="86">86 years</option>
+            <option value="87">87 years</option>
+            <option value="88">88 years</option>
+            <option value="89">89 years</option>
+            <option value="90">90 years</option>
+            <option value="91">91 years</option>
+            <option value="92">92 years</option>
+            <option value="93">93 years</option>
+            <option value="94">94 years</option>
+            <option value="95">95 years</option>
+            <option value="96">96 years</option>
+            <option value="97">97 years</option>
+            <option value="98">98 years</option>
+            <option value="99">99 years</option>
+            <option value="100">100 years</option>
+            <option value="101">Above 100 years</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="patient-gender">Gender<span class="text-red-500">*</span></label>
+          <select id="patient-gender" name="gender" required>
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="blood-group">Blood Group<span class="text-red-500">*</span></label>
+          <select id="blood-group" name="blood" required>
+            <option value="">Select</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="contact-number">Contact Number<span class="text-red-500">*</span></label>
+          <input 
+            type="tel"
+            id="contact-number"
+            name="contact"
+            placeholder="Enter 10-digit number"
+            pattern="\d{10}"
+            inputmode="numeric"
+            maxlength="10"
+            required
+            title="Please enter a valid 10-digit phone number" />
+        </div>
+      </div>
+      <div class="text-right mt-6">
+        <button type="button" id="patientNextBtn" class="bg-gray-400 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+          Next
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const patientForm = document.getElementById('patientForm');
+      const patientNextBtn = document.getElementById('patientNextBtn');
+      const contactInput = document.getElementById('contact-number');
+      const nameInput = document.getElementById('patient-name');
+      const ageInput = document.getElementById('age');
+      const ageTypeSelect = document.getElementById('patient-age-type');
+
+      // Load saved patient data if exists
+      const savedPatientData = localStorage.getItem('patientData');
+      if (savedPatientData) {
+        const patientData = JSON.parse(savedPatientData);
+        document.getElementById('patient-name').value = patientData.name || '';
+        document.getElementById('age').value = patientData.age || '';
+        document.getElementById('patient-gender').value = patientData.gender || '';
+        document.getElementById('blood-group').value = patientData.blood || '';
+        document.getElementById('contact-number').value = patientData.contact || '';
+        checkForm();
+      }
+
+      nameInput.addEventListener('input', () => {
+        nameInput.value = nameInput.value.replace(/[^A-Za-z\s]/g, '');
+      });
+
+      // Validate and enable/disable next button
+      function checkForm() {
+        const name = document.getElementById('patient-name').value;
+        const age = document.getElementById('age').value;
+        const gender = document.getElementById('patient-gender').value;
+        const blood = document.getElementById('blood-group').value;
+        const contact = document.getElementById('contact-number').value;
+
+        if (name && age && gender && blood && contact.length === 10) {
+          patientNextBtn.classList.remove('bg-gray-400');
+          patientNextBtn.classList.add('bg-blue-600');
+          return true;
+        } else {
+          patientNextBtn.classList.add('bg-gray-400');
+          patientNextBtn.classList.remove('bg-blue-600');
+          return false;
+        }
+      }
+
+      // Add input listeners
+      const inputs = document.querySelectorAll('input, select');
+      inputs.forEach(input => {
+        input.addEventListener('input', checkForm);
+        input.addEventListener('change', checkForm);
+      });
+
+      // Only allow numbers in contact field
+      contactInput.addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        if (e.target.value.length > 10) {
+          e.target.value = e.target.value.slice(0, 10);
+        }
+        checkForm();
+      });
+
+      // Handle next button click
+      patientNextBtn.addEventListener('click', () => {
+        if (checkForm()) {
+          const ageSelect = document.getElementById('age');
+          const ageValue = ageSelect.value;
+          const ageText = ageSelect.options[ageSelect.selectedIndex].text;
+          
+          const patientData = {
+            name: document.getElementById('patient-name').value.trim(),
+            age: ageValue,
+            ageDisplay: ageText,
+            gender: document.getElementById('patient-gender').value.trim(),
+            blood: document.getElementById('blood-group').value.trim(),
+            contact: document.getElementById('contact-number').value.trim()
+          };
+          
+          // Clear any existing appointment data to avoid conflicts
+          localStorage.removeItem('appointmentData');
+          
+          // Store the patient data
+          localStorage.setItem('patientData', JSON.stringify(patientData));
+          
+          // Clear any previous appointment for this patient
+          localStorage.removeItem('lastBookedPatient');
+          
+          window.location.href = 'select-doctor.html';
+        }
+      });
+
+      // Initial check
+      checkForm();
+    });
+  </script>
+</body>
+</html>

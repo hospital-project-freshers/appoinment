@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Choose Date & Time - Book Appointment</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .calendar-day:hover {
+      background-color: #e5e7eb;
+      cursor: pointer;
+    }
+    .calendar-day.selected {
+      background-color: #3b82f6;
+      color: white;
+    }
+    .time-slot {
+      transition: all 0.2s ease;
+      position: relative;
+      height: 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .time-slot:hover:not(.unavailable) {
+      background-color: #e5e7eb;
+    }
+    .time-slot.selected {
+      background-color: #3b82f6;
+      color: white;
+    }
+    .time-slot.unavailable {
+      color: #dc2626;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+    /* Add tooltip styles */
+    .time-slot[data-tooltip]:hover:before {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 4px 8px;
+      background-color: #374151;
+      color: white;
+      font-size: 12px;
+      border-radius: 4px;
+      white-space: nowrap;
+      z-index: 10;
+    }
+    /* Add a small arrow to the tooltip */
+    .time-slot[data-tooltip]:hover:after {
+      content: '';
+      position: absolute;
+      bottom: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 4px;
+      border-style: solid;
+      border-color: #374151 transparent transparent transparent;
+    }
+  </style>
+</head>
+<body class="bg-blue-50 font-sans">
+  <!-- Header -->
+  <div class="p-4 flex justify-between items-center bg-white shadow">
+    <div class="flex items-center">
+      <svg class="w-6 h-6 text-blue-600 mr-2 ml-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+      </svg>
+      <h1 class="text-2xl font-bold text-blue-600">MediCare</h1>
+    </div>
+    <button onclick="window.location.href='admindasboard.html'" class="text-gray-600 hover:text-gray-800 flex items-center">
+      Back to Dashboard
+      <svg class="w-4 h-4 mr-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/> -->
+      </svg>
+    </button>
+  </div>
+
+  <!-- Book an Appointment Title -->
+  <div class="max-w-4xl mx-auto mt-8">
+    <h2 class="text-2xl font-bold text-gray-800 mb-6">Book an Appointment</h2>
+  </div>
+
+  <!-- Stepper -->
+  <div class="max-w-4xl mx-auto mt-8">
+    <div class="flex items-center justify-between relative">
+      <div class="relative flex justify-between w-full">
+        <!-- Step 1 -->
+        <div class="flex-1 text-center">
+          <div class="relative">
+            <!-- Line after step 1 (completed) -->
+            <div class="absolute top-5 left-1/2 w-full h-1 bg-blue-600"></div>
+            <!-- Circle -->
+            <div class="w-10 h-10 bg-white text-blue-600 rounded-full flex items-center justify-center mx-auto relative z-10 border-2 border-blue-600">✓</div>
+          </div>
+          <p class="mt-2 text-sm text-blue-600">Patient details</p>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex-1 text-center">
+          <div class="relative">
+            <!-- Line before and after step 2 (completed) -->
+            <div class="absolute top-5 right-1/2 w-full h-1 bg-blue-600"></div>
+            <div class="absolute top-5 left-1/2 w-full h-1 bg-blue-600"></div>
+            <!-- Circle -->
+            <div class="w-10 h-10 bg-white text-blue-600 rounded-full flex items-center justify-center mx-auto relative z-10 border-2 border-blue-600">✓</div>
+          </div>
+          <p class="mt-2 text-sm text-blue-600">Select doctor</p>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex-1 text-center">
+          <div class="relative">
+            <!-- Line before and after step 3 -->
+            <div class="absolute top-5 right-1/2 w-full h-1 bg-blue-600"></div>
+            <div class="absolute top-5 left-1/2 w-full h-1 bg-gray-200"></div>
+            <!-- Circle -->
+            <div class="w-10 h-10 bg-white text-blue-600 rounded-full flex items-center justify-center mx-auto relative z-10 border-2 border-blue-600">3</div>
+          </div>
+          <p class="mt-2 text-sm font-medium text-blue-600">Choose Date & Time</p>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="flex-1 text-center">
+          <div class="relative">
+            <!-- Line before step 4 -->
+            <div class="absolute top-5 right-1/2 w-full h-1 bg-gray-200"></div>
+            <!-- Circle -->
+            <div class="w-10 h-10 bg-white text-gray-400 rounded-full flex items-center justify-center mx-auto relative z-10 border-2 border-gray-200">4</div>
+          </div>
+          <p class="mt-2 text-sm text-gray-400">Confirmation</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Calendar Section -->
+  <div class="max-w-4xl mx-auto bg-white p-6 mt-8 rounded shadow">
+    <h2 class="text-xl font-semibold mb-4">Choose Date & Time</h2>
+    <p class="text-gray-600 mb-6">Select your preferred appointment date and time</p>
+    
+    <div class="grid grid-cols-2 gap-8">
+      <!-- Calendar -->
+      <div class="border rounded-lg p-4">
+        <div class="flex justify-between items-center mb-4">
+          <button type="button" onclick="changeMonth(-1)" class="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded-md transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <h3 id="monthLabel" class="text-lg font-medium"></h3>
+          <button type="button" onclick="changeMonth(1)" class="px-3 py-1 text-gray-600 hover:bg-gray-100 rounded-md transition-colors duration-200 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+        
+        <div class="grid grid-cols-7 gap-1">
+          <div id="dayNames" class="col-span-7 grid grid-cols-7 text-center text-sm text-gray-600 mb-2"></div>
+          <div id="daysContainer" class="col-span-7 grid grid-cols-7 gap-1"></div>
+        </div>
+
+        <div class="mt-4 flex items-center text-sm text-gray-600">
+          <span class="flex items-center mr-4">
+            <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
+            Available
+          </span>
+          <!-- <span class="flex items-center mr-4">
+            <span class="w-3 h-3 rounded-full bg-gray-300 mr-2"></span>
+            Past Dates
+          </span> -->
+          <span class="flex items-center">
+            <span class="w-3 h-3 rounded-full bg-red-100 mr-2"></span>
+            Unavailable
+          </span>
+        </div>
+      </div>
+
+      <!-- Time Slots -->
+      <div>
+        <div id="noTime" class="flex flex-col items-center justify-center h-64 text-gray-500 border rounded-lg p-4">
+          <svg class="w-16 h-16 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <p class="text-center">Please select a date from the calendar to view available time slots</p>
+        </div>
+        <div id="loadingTime" class="hidden flex flex-col items-center justify-center h-64 text-gray-500 border rounded-lg p-4">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+          <p class="text-center">Loading available time slots...</p>
+        </div>
+        <div id="timeSlots" class="border rounded-lg p-4 hidden">
+          <div class="flex justify-between items-center mb-4 border-b pb-3">
+            <h4 class="font-medium text-lg text-gray-800">Select Time</h4>
+          </div>
+          <div class="grid grid-cols-3 gap-4 p-2">
+            <!-- Time slots will be dynamically populated -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-between mt-8">
+      <button onclick="history.back()" class="px-6 py-2 border border-gray-300 rounded-lg text-white bg-gray-600">Back</button>
+      <button id="nextBtn" onclick="proceedToConfirmation()" disabled class="px-6 py-2 bg-gray-400 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+    </div>
+  </div>
+
+  <script>
+    let currentDate = new Date();
+    let selectedDate = null;
+    let selectedTime = null;
+    let selectedDoctor = null;
+
+    // All possible time slots for display
+    const allTimeSlots = [
+      "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
+      "12:00 PM", "12:30 PM", "1:00 PM - 2:00 PM", "2:30 PM", 
+      "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM"
+    ];
+
+    // Doctor time slots
+    const doctorTimeSlots = {
+      "Dr. Sarah Johnson": [
+        "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM",
+        "11:30 AM", "12:00 PM", "12:30 PM", "2:00 PM", "2:30 PM", 
+        "3:00 PM"  
+      ],
+      "Dr. Michael Chen": [
+        "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "2:00 PM", 
+        "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", 
+        "5:00 PM"  
+      ],
+      "Dr. Emily Rodriguez": [
+        "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM",
+        "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", 
+        "5:00 PM"  
+      ],
+      "Dr. James Wilson": [
+        "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM",
+        "12:30 PM", "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM"  
+      ],
+      "Dr. Srivani": [
+        "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "2:00 PM",
+        "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM"  // Morning and afternoon slots
+      ],
+      "Dr. Aswini": [
+        "11:30 AM", "12:00 PM", "12:30 PM", "2:00 PM", "2:30 PM",
+        "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM"  // Late morning and full afternoon
+      ],
+      "Dr. Akhila": [
+        "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM",
+        "11:30 AM", "12:00 PM", "2:00 PM", "2:30 PM"  // Primarily morning shift
+      ],
+      "Dr. Vinod": [
+        "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM",
+        "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM"  // Mid-morning and late afternoon
+      ],
+      "Dr. Kiran": [
+        "9:00 AM", "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM",
+        "2:00 PM", "2:30 PM", "3:00 PM", "4:30 PM", "5:00 PM"  // Early morning and scattered afternoon
+      ],
+      "Dr. keerthi": [
+        "9:30 AM", "10:00 AM", "11:00 AM", "11:30 AM", "12:00 PM",
+        "2:30 PM", "3:00 PM", "3:30 PM", "4:00 PM"  // Mixed schedule
+      ],
+      "Dr. Vedanshi": [
+        "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:30 PM",
+        "2:00 PM", "2:30 PM", "4:00 PM", "4:30 PM", "5:00 PM"  // Mid-morning and scattered afternoon
+      ],
+      "Dr. Vivek": [
+        "9:00 AM", "9:30 AM", "10:00 AM", "12:00 PM", "12:30 PM",
+        "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM"  // Early morning and early afternoon
+      ],
+      "Dr. Om": [
+        "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "2:00 PM",
+        "3:00 PM", "3:30 PM", "4:00 PM", "4:30 PM"  // Late morning and afternoon
+      ]
+    };
+
+    // Doctor unavailable dates
+    const doctorUnavailableDates = {
+      "Dr. Sarah Johnson": ["5/26/2025"],
+      "Dr. Michael Chen": ["5/28/2025"],
+      "Dr. Srivani": ["5/29/2025"]
+    };
+
+    // Doctor specific restrictions with their lunch breaks
+    const doctorRestrictions = {
+      "Dr. Sarah Johnson": {
+        lunchBreak: "1:00-2:00 PM"
+      },
+      "Dr. Michael Chen": {
+        lunchBreak: "1:00-2:00 PM"
+      },
+      "Dr. Emily Rodriguez": {
+        lunchBreak: "1:00-2:00 PM"
+      },
+      "Dr. James Wilson": {
+        lunchBreak: "1:00-2:00 PM"
+      },
+      "Dr. Srivani": {
+        lunchBreak: "1:00-2:00 PM"
+      },
+      "Dr. Aswini": {
+        lunchBreak: "1:00-2:00 PM"
+      },
+      "Dr. Akhila": {
+        lunchBreak: "1:00-2:00 PM"
+      },
+      "Dr. Vinod": {
+        lunchBreak: "1:00-2:00 PM"
+      },
+      "Dr. Kiran": {
+        lunchBreak: "1:00-2:00 PM"
+      },
+      "Dr. keerthi": {
+        lunchBreak: "1:00-2:00 PM"
+      },
+      "Dr. Vedanshi": {
+        lunchBreak: "1:00-2:00 PM"
+      },
+      "Dr. Vivek": {
+        lunchBreak: "1:00-2:00 PM"
+      },
+      "Dr. Om": {
+        lunchBreak: "1:00-2:00 PM"
+      }
+    };
+
+    function formatDateString(date) {
+      return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    }
+
+    function getLunchBreakSlots(lunchBreak) {
+      const [start, end] = lunchBreak.split('-');
+      const startTime = start.trim();
+      const endTime = end.trim();
+      const slots = [];
+      let foundStart = false;
+      
+      for (const slot of allTimeSlots) {
+        if (slot === startTime) {
+          foundStart = true;
+        }
+        if (foundStart) {
+          slots.push(slot);
+        }
+        if (slot === endTime) {
+          break;
+        }
+      }
+      
+      return slots;
+    }
+
+    function isTimeSlotAvailable(doctor, time) {
+      const restrictions = doctorRestrictions[doctor.name];
+      if (restrictions) {
+        // Check if time is within lunch break
+        const lunchBreakSlots = getLunchBreakSlots(restrictions.lunchBreak);
+        if (lunchBreakSlots.includes(time)) {
+          return false;
+        }
+        // Check unavailable times
+        if (restrictions.unavailableTimes && restrictions.unavailableTimes.includes(time)) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function renderCalendar(date) {
+      const monthLabel = document.getElementById('monthLabel');
+      const daysContainer = document.getElementById('daysContainer');
+      const dayNames = document.getElementById('dayNames');
+      
+      // Set up day names
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      dayNames.innerHTML = days.map(d => `<div class="text-center font-medium">${d}</div>`).join('');
+      
+      // Clear previous calendar
+      daysContainer.innerHTML = '';
+      
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      
+      // Always show month and year
+      const monthName = date.toLocaleString('default', { month: 'long' });
+      monthLabel.textContent = `${monthName} ${year}`;
+      
+      // Get first day and days in month
+      const firstDay = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      
+      // Add empty cells for days before the first day of the month
+      for (let i = 0; i < firstDay; i++) {
+        const emptyDay = document.createElement('div');
+        emptyDay.className = 'h-10';
+        daysContainer.appendChild(emptyDay);
+      }
+      
+      // Add days of the month
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Calculate the last available month (current month + 2)
+      // Set to the last day of the month to include all days
+      const lastAvailableMonth = new Date(today.getFullYear(), today.getMonth() + 3, 0);
+      
+      // Check if this month is within the available range (current month to next 2 months)
+      const isAvailableMonth = (thisDate) => {
+        return thisDate >= today && thisDate <= lastAvailableMonth;
+      };
+      
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dayDiv = document.createElement('div');
+        dayDiv.textContent = day;
+        
+        const thisDate = new Date(year, month, day);
+        thisDate.setHours(0, 0, 0, 0);
+        const dateString = formatDateString(thisDate);
+        
+        // Check if date is in the past or unavailable
+        const isPast = thisDate < today;
+        const isUnavailable = selectedDoctor && 
+          doctorUnavailableDates[selectedDoctor.name]?.includes(dateString);
+        const isWithinBookingWindow = isAvailableMonth(thisDate);
+        const isFutureMonth = !isWithinBookingWindow && thisDate > lastAvailableMonth;
+        
+        let className = 'calendar-day h-10 flex items-center justify-center rounded-full font-medium ';
+        
+        if (isPast || isUnavailable || !isWithinBookingWindow) {
+          if (isFutureMonth) {
+            // Future months beyond booking window
+            className += 'bg-gray-50 text-gray-400 cursor-not-allowed';
+          } else if (isUnavailable) {
+            // Unavailable dates within booking window
+            className += 'bg-red-100 text-gray-600 cursor-not-allowed';
+          } else if (isPast) {
+            // Past dates - make them very subtle
+            className += 'text-gray-200 cursor-not-allowed opacity-40';
+          } else {
+            // Other unavailable dates
+            className += 'text-gray-400 cursor-not-allowed';
+          }
+        } else {
+          // Available dates within booking window
+          className += 'bg-green-100 text-gray-800 cursor-pointer hover:bg-green-200';
+          dayDiv.addEventListener('click', () => selectDate(dateString, dayDiv));
+        }
+        
+        // Add selected class if this is the selected date
+        if (selectedDate === dateString) {
+          className += ' selected bg-green-500 text-white hover:bg-green-600';
+        }
+        
+        dayDiv.className = className;
+        daysContainer.appendChild(dayDiv);
+      }
+    }
+
+    // Add caching for booked slots
+    const bookedSlotsCache = new Map();
+
+    // Modify getBookedSlots to use caching
+    async function getBookedSlots(doctorName, date) {
+      const cacheKey = `${doctorName}-${date}`;
+      
+      // Check cache first
+      if (bookedSlotsCache.has(cacheKey)) {
+        return bookedSlotsCache.get(cacheKey);
+      }
+
+      try {
+        const response = await fetch(`http://localhost:3022/api/confirmations/booked-slots?doctorName=${encodeURIComponent(doctorName)}&date=${encodeURIComponent(date)}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch booked slots');
+        }
+        const data = await response.json();
+        const bookedTimes = data.bookedTimes || [];
+        
+        // Cache the result
+        bookedSlotsCache.set(cacheKey, bookedTimes);
+        
+        return bookedTimes;
+      } catch (error) {
+        console.error('Error fetching booked slots:', error);
+        return [];
+      }
+    }
+
+    // Add time conversion helper function
+    function convertTo24Hour(time) {
+      // Handle lunch break format
+      if (time.includes('-')) {
+        time = time.split('-')[0].trim();
+      }
+      const [timeStr, period] = time.split(' ');
+      const [hours, minutes] = timeStr.split(':');
+      let hour = parseInt(hours);
+      const isPM = period === 'PM';
+      
+      if (isPM && hour !== 12) {
+        hour += 12;
+      } else if (!isPM && hour === 12) {
+        hour = 0;
+      }
+      
+      return hour * 60 + parseInt(minutes || 0);
+    }
+
+    // Add function to check if time slot is in the past
+    function isTimeSlotPast(timeStr) {
+      const now = new Date();
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      // If not today, no need to check time
+      if (selectedDate !== formatDateString(today)) {
+        return false;
+      }
+      
+      const currentMinutes = now.getHours() * 60 + now.getMinutes();
+      const slotMinutes = convertTo24Hour(timeStr);
+      
+      return slotMinutes <= currentMinutes;
+    }
+
+    // Modify updateTimeSlots to sort times properly
+    async function updateTimeSlots() {
+      const timeSlotsContainer = document.querySelector('#timeSlots .grid');
+      timeSlotsContainer.innerHTML = '';
+      
+      if (!selectedDoctor || !selectedDate) return;
+
+      // Get booked slots for this doctor and date
+      const bookedSlots = await getBookedSlots(selectedDoctor.name, selectedDate);
+
+      // Get the available time slots for the selected doctor and sort them
+      let doctorAvailableSlots = doctorTimeSlots[selectedDoctor.name] || [];
+      
+      // Sort the time slots chronologically
+      doctorAvailableSlots = doctorAvailableSlots.sort((a, b) => {
+        // Extract just the time part before comparing (remove "- Booked" if present)
+        const timeA = a.split(' - ')[0];
+        const timeB = b.split(' - ')[0];
+        return convertTo24Hour(timeA) - convertTo24Hour(timeB);
+      });
+
+      // Show only the available time slots for this doctor
+      doctorAvailableSlots.forEach(time => {
+        // Skip the lunch hour
+        if (time === "1:00 PM - 2:00 PM") return;
+
+        const timeSlot = document.createElement('div');
+        const isBooked = bookedSlots.includes(time);
+        const isPastTime = isTimeSlotPast(time);
+        
+        if (isBooked) {
+          // Booked slot with red background and "Booked" text
+          timeSlot.className = 'time-slot p-2 text-center border rounded bg-red-100 text-red-600 cursor-not-allowed';
+          timeSlot.innerHTML = `${time}<br><span class="text-sm">Booked</span>`;
+        } else if (isPastTime) {
+          // Past time slot with gray background
+          timeSlot.className = 'time-slot p-2 text-center border rounded bg-gray-200 text-gray-500 cursor-not-allowed';
+          timeSlot.textContent = time;
+        } else {
+          // Available time slot
+          timeSlot.className = 'time-slot p-2 text-center border rounded cursor-pointer hover:bg-gray-100';
+          timeSlot.textContent = time;
+          
+          // Check if this was the previously selected time for this date
+          const savedAppointment = JSON.parse(localStorage.getItem('appointmentData') || '{}');
+          if (savedAppointment.date === selectedDate && savedAppointment.time === time) {
+            timeSlot.classList.add('selected', 'bg-green-500', 'text-white');
+            selectedTime = time;
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('nextBtn').classList.remove('bg-gray-400');
+            document.getElementById('nextBtn').classList.add('bg-blue-600');
+          }
+
+          timeSlot.addEventListener('click', () => {
+            // Remove selection from all time slots
+            document.querySelectorAll('.time-slot.selected').forEach(slot => {
+              slot.classList.remove('selected', 'bg-green-500', 'text-white');
+            });
+            
+            // Add selection to clicked slot
+            timeSlot.classList.add('selected', 'bg-green-500', 'text-white');
+            
+            // Update selected time
+            selectedTime = time;
+            
+            // Enable next button
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('nextBtn').classList.remove('bg-gray-400');
+            document.getElementById('nextBtn').classList.add('bg-blue-600');
+          });
+        }
+        
+        timeSlotsContainer.appendChild(timeSlot);
+      });
+
+      // Add the lunch break slot in the correct position
+      const lunchSlot = document.createElement('div');
+      lunchSlot.className = 'time-slot p-2 text-center border rounded bg-gray-100 text-gray-600 cursor-not-allowed col-span-3';
+      lunchSlot.innerHTML = `1:00 PM - 2:00 PM<br><span class="text-sm">Lunch Break</span>`;
+      lunchSlot.setAttribute('data-tooltip', 'Lunch Break');
+      
+      // Find where to insert lunch break (after 12:30 PM)
+      const slots = Array.from(timeSlotsContainer.children);
+      const lunchIndex = slots.findIndex(slot => {
+        const time = slot.textContent.split(' - ')[0];
+        return convertTo24Hour(time) >= convertTo24Hour("1:00 PM");
+      });
+      
+      if (lunchIndex !== -1) {
+        timeSlotsContainer.insertBefore(lunchSlot, slots[lunchIndex]);
+      } else {
+        timeSlotsContainer.appendChild(lunchSlot);
+      }
+
+      document.getElementById('timeSlots').classList.remove('hidden');
+      document.getElementById('noTime').classList.add('hidden');
+      document.getElementById('loadingTime').classList.add('hidden');
+    }
+
+    // Modify selectDate function to show loading state
+    function selectDate(date, element) {
+      // Remove previous selection
+      document.querySelectorAll('.calendar-day.selected').forEach(el => 
+        el.classList.remove('selected', 'bg-green-500', 'text-white', 'hover:bg-green-600'));
+      
+      // Add selection to clicked date
+      element.classList.add('selected', 'bg-green-500', 'text-white', 'hover:bg-green-600');
+      selectedDate = date;
+      
+      // Clear previous time selection when new date is selected
+      selectedTime = null;
+      document.getElementById('nextBtn').disabled = true;
+      document.getElementById('nextBtn').classList.add('bg-gray-400');
+      document.getElementById('nextBtn').classList.remove('bg-blue-600');
+      
+      // Show loading state
+      document.getElementById('noTime').style.display = 'none';
+      document.getElementById('timeSlots').style.display = 'none';
+      document.getElementById('loadingTime').style.display = 'flex';
+      
+      // Call updateTimeSlots and handle the promise
+      updateTimeSlots()
+        .then(() => {
+          // Hide loading and show time slots
+          document.getElementById('loadingTime').style.display = 'none';
+          document.getElementById('timeSlots').style.display = 'block';
+        })
+        .catch(error => {
+          console.error('Error updating time slots:', error);
+          // Show error state
+          document.getElementById('loadingTime').style.display = 'none';
+          document.getElementById('noTime').style.display = 'flex';
+          document.getElementById('noTime').innerHTML = `
+            <svg class="w-16 h-16 mb-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-center text-red-500">Error loading time slots. Please try again.</p>
+          `;
+        });
+    }
+
+    function changeMonth(offset) {
+      const newDate = new Date(currentDate);
+      newDate.setMonth(newDate.getMonth() + offset);
+      
+      // Allow viewing any future month but don't restrict navigation
+      currentDate = newDate;
+      renderCalendar(currentDate);
+      updateMonthNavigation();
+    }
+
+    function updateMonthNavigation() {
+      const prevButton = document.querySelector('button[onclick="changeMonth(-1)"]');
+      const nextButton = document.querySelector('button[onclick="changeMonth(1)"]');
+      
+      const today = new Date();
+      const currentMonth = currentDate.getMonth();
+      const currentYear = currentDate.getFullYear();
+      const todayMonth = today.getMonth();
+      const todayYear = today.getFullYear();
+      
+      // Only disable previous button if we're in the current month
+      const isPrevDisabled = currentMonth <= todayMonth && currentYear <= todayYear;
+      prevButton.disabled = isPrevDisabled;
+      prevButton.classList.toggle('opacity-50', isPrevDisabled);
+      prevButton.classList.toggle('cursor-not-allowed', isPrevDisabled);
+      
+      // Allow viewing all future months
+      nextButton.disabled = false;
+      nextButton.classList.remove('opacity-50', 'cursor-not-allowed');
+    }
+
+    function proceedToConfirmation() {
+      if (selectedDate && selectedTime) {
+        // Store appointment details
+        const appointmentData = {
+          date: selectedDate,
+          time: selectedTime
+        };
+        localStorage.setItem('appointmentData', JSON.stringify(appointmentData));
+        
+        // Redirect to confirmation page
+        window.location.href = 'confirmation.html';
+      }
+    }
+
+    // Add a function to check and update availability when month changes
+    function checkAndUpdateAvailability() {
+      const today = new Date();
+      const currentMonth = today.getMonth();
+      const currentYear = today.getFullYear();
+
+      // If we're viewing the current month, refresh the calendar
+      if (currentDate.getMonth() === currentMonth && currentDate.getFullYear() === currentYear) {
+        renderCalendar(currentDate);
+      }
+    }
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check if we have patient and doctor data
+      const patientData = localStorage.getItem('patientData');
+      const doctorData = localStorage.getItem('selectedDoctor');
+      const savedAppointment = JSON.parse(localStorage.getItem('appointmentData') || '{}');
+      
+      if (!patientData || !doctorData) {
+        // Redirect back if data is missing
+        window.location.href = !patientData ? 'patient-details.html' : 'select-doctor.html';
+        return;
+      }
+      
+      selectedDoctor = JSON.parse(doctorData);
+      
+      // Set current date to today
+      currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0);
+
+      // Get the current patient's data
+      const currentPatient = JSON.parse(patientData);
+      
+      // Get the patient info from the saved appointment (if it exists)
+      const savedPatientData = localStorage.getItem('lastBookedPatient');
+      const lastBookedPatient = savedPatientData ? JSON.parse(savedPatientData) : null;
+
+      // Check if this is a new patient or different from the last booked patient
+      const isNewBooking = !lastBookedPatient || 
+                          lastBookedPatient.name !== currentPatient.name || 
+                          lastBookedPatient.contact !== currentPatient.contact;
+
+      // Clear appointment data if this is a new booking
+      if (isNewBooking) {
+        localStorage.removeItem('appointmentData');
+        selectedDate = null;
+        selectedTime = null;
+        // Save current patient as last booked
+        localStorage.setItem('lastBookedPatient', JSON.stringify(currentPatient));
+      } 
+      // Otherwise, restore saved appointment if it exists
+      else if (savedAppointment.date && savedAppointment.time) {
+        selectedDate = savedAppointment.date;
+        selectedTime = savedAppointment.time;
+        
+        // Parse the saved date to set the correct month in the calendar
+        const [month, day, year] = savedAppointment.date.split('/');
+        currentDate = new Date(year, month - 1, day);
+
+        // Enable the next button since we have a selection
+        document.getElementById('nextBtn').disabled = false;
+        document.getElementById('nextBtn').classList.remove('bg-gray-400');
+        document.getElementById('nextBtn').classList.add('bg-blue-600');
+      }
+      
+      renderCalendar(currentDate);
+      updateMonthNavigation();
+
+      // If there's a selected date, show and update time slots
+      if (selectedDate) {
+        // Find and highlight the selected date in the calendar
+        setTimeout(() => {
+          const calendarDays = document.querySelectorAll('.calendar-day');
+          const selectedDay = Array.from(calendarDays).find(day => {
+            const dayNum = parseInt(day.textContent);
+            const [month, date, year] = selectedDate.split('/');
+            return dayNum === parseInt(date);
+          });
+          
+          if (selectedDay) {
+            selectedDay.classList.add('selected', 'bg-green-500', 'text-white', 'hover:bg-green-600');
+          }
+          
+          // Show and update time slots
+          document.getElementById('noTime').style.display = 'none';
+          document.getElementById('timeSlots').style.display = 'block';
+          updateTimeSlots();
+        }, 100);
+      }
+
+      // Check for month changes every minute
+      setInterval(checkAndUpdateAvailability, 60000);
+
+      // Add popstate event listener to handle back button
+      window.addEventListener('popstate', function(event) {
+        if (savedAppointment.date && savedAppointment.time) {
+          selectedDate = savedAppointment.date;
+          selectedTime = savedAppointment.time;
+          
+          // Parse the saved date to set the correct month in the calendar
+          const [month, day, year] = savedAppointment.date.split('/');
+          currentDate = new Date(year, month - 1, day);
+          
+          renderCalendar(currentDate);
+          updateMonthNavigation();
+          
+          // Update time slots and selections
+          if (selectedDate) {
+            document.getElementById('noTime').style.display = 'none';
+            document.getElementById('timeSlots').style.display = 'block';
+            updateTimeSlots();
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
